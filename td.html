@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>To-Do List</title>
+
+<style>
+#input {
+  text-align: center;
+  color: MidnightBlue;
+  font-size: 40px; 
+  font-style: italic;
+  margin-top: 40px;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(to bottom, #c90076, #8e7cc3, #f1c232);
+    background-size: 400% 400%;
+    animation: gradientMove 10s ease infinite;
+}
+
+@keyframes gradientMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+.card {
+    background: linear-gradient(135deg, #a1c4fd, #c2e9fb);
+    color: #333;
+    padding: 30px 50px;
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    transition: 0.3s;
+}
+.card:hover {
+    transform: translateY(-10px) scale(1.03);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+}
+.title {
+    text-align: center;
+    font-size: 22px;
+    font-weight: bold;
+    color: #4c51bf;
+}
+
+
+input {
+    margin-top: 20px;
+    padding: 10px;
+    width: 200px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+button {
+    padding: 10px 15px;
+    margin-top: 10px;
+    border: none;
+    background: MidnightBlue;
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+button:hover {
+    background: #5a67d8;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+    margin-top: 20px;
+}
+
+li {
+    background: #f1f5ff;
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+</style>
+
+</head>
+
+<body>
+
+<h2 id="input"></h2>
+
+<div class="card">
+    <div class="title">
+        ✏️ Here’s your To-Do List
+    </div>
+
+    <div style="text-align:center;">
+    <input type="text" id="taskInput" placeholder="Enter your task">
+    <br>
+    <button onclick="addTask()">Add Task</button>
+    <br>
+    </div>
+
+    <ul id="tl"></ul>
+    <p id="message" style="color: green; font-weight: bold;"></p>
+</div>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const name = params.get("name");
+document.getElementById("input").innerText = "Hello " + name + " 👋";
+
+function addTask() {
+    let task = document.getElementById("taskInput").value.trim();
+    if (task === "") return;
+
+    let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+    tasks.push(task);
+
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+
+    displayTasks();
+    document.getElementById("taskInput").value = "";
+}
+
+function showMessage(msg) {
+    let message = document.getElementById("message");
+    message.innerText = msg;
+
+    setTimeout(() => {
+        message.innerText = "";
+    }, 2000);
+}
+
+function displayTasks() {
+    let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+    let list = document.getElementById("tl");
+
+    list.innerHTML = "";
+
+    tasks.forEach((task, index) => {
+        let li = document.createElement("li");
+
+        let checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+
+        checkbox.onclick = function() {
+            removeTask(index);
+            showMessage("Task completed ✅");
+        };
+
+        let span = document.createElement("span");
+        span.innerText = task;
+
+        li.appendChild(checkbox);
+        li.appendChild(span);
+
+        list.appendChild(li);
+    });
+}
+
+function removeTask(index) {
+    let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+    tasks.splice(index, 1);
+
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+    displayTasks();
+}
+
+displayTasks();
+
+document.getElementById("taskInput").addEventListener("keypress", function(e) {
+    if (e.key === "Enter") {
+        addTask();
+    }
+});
+</script>
+<button onclick="window.location.href='index.html';">Done</button>
+
+</body>
+</html>
